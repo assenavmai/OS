@@ -9,35 +9,79 @@ Node * Q_create(){
 	return q;
 }
 
-void enqueue(int priority, int number_of_processes, int thread_switch, int process_switch, int process_number, int arrival_time, int number_of_cpu, int cpu_time, int io_time, int thread_number){
+/*add to the back of the queue*/
+void enqueue(int process_number, int thread_number, int cpu_time, int io_time, int arrival_time, type_t type, int index, int number_of_cpu){
 
 	Node * data;
+	
+	/*priority is automatically -2*/
+	data = initNode(-2, process_number, thread_number, cpu_time, io_time, arrival_time, type, index, number_of_cpu);
 
-	data = initNode(priority, number_of_processes, thread_switch, process_switch, process_number, arrival_time, number_of_cpu, cpu_time, io_time, thread_number);
-
-	if(head == NULL)
+	/*if there is no head make a list else add to the back*/
+	if(q_head == NULL)
 	{
-		head = tail = data;
+		q_head = q_tail = data;
 	}
 	else
 	{
-		tail->next = data;
-		tail = data;
+		q_tail->next = data;
+		q_tail = data;
 	}
+
+	q_len++;
+
 }
 
-int peek(){
+/*insert when it is in IO mode*/
+void Q_insert(Node * nextEvent){
 
-	int peekRt = 0;
-
-	if(head == NULL)
+	if(q_head == NULL)
 	{
-		fprintf(stderr, "%s\n", "Peek Error: peek(), line 33.");
+		q_head = nextEvent;
+		q_tail = nextEvent;
+	}
+	else
+	{
+		q_tail->next = nextEvent;
+		q_tail = nextEvent;
+	}
+
+	q_len++;
+
+	/*printf("%d\n", q_tail->thread_number);*/
+}
+
+/*remove the head of the queue*/
+void Q_dequeue(){
+
+	Node * temp;
+
+	if(Q_isEmpty())
+	{
+		fprintf(stderr, "%s\n", "Deletion Error: dequeue(), line 39.");
 		exit(1);
 	}
-	
-	peekRt = head->priority;
 
-	return peekRt;
+	temp = q_head;
+	q_head = temp->next;
+	q_len--;
+	/*free(temp);*/
 
+	/*temp = temp->next;
+	head = temp;*/
+	/*head = head->next;
+	temp->next = NULL;
+	free(temp);*/
 }
+
+/*check if the queue is empty*/
+Boolean Q_isEmpty(){
+
+	if(q_len == 0)
+	{
+		return true;
+	}
+
+	return false;
+}
+

@@ -1,6 +1,7 @@
 #include "QStruct.h"
 
-Node * initNode(int priority, int number_of_processes, int thread_switch, int process_switch, int process_number, int number_of_threads, Thread  info){
+/*Creates a Node and initializes all of the values*/
+Node * initNode(int priority, int process_number, int thread_number, int cpu_time, int io_time, int arrival_time, type_t type, int index, int number_of_cpu){
 
 	Node * newNode = malloc(sizeof(Node) * 1);
 
@@ -10,35 +11,35 @@ Node * initNode(int priority, int number_of_processes, int thread_switch, int pr
 		exit(0);
 	}
 
-	newNode->info = info;
+	newNode->info[thread_number].number_of_cpu = number_of_cpu;
 	newNode->priority = priority;
-	newNode->number_of_processes = number_of_processes;
-	newNode->thread_switch = thread_switch;
-	newNode->process_switch = process_switch;
+	newNode->cpuIndex = index;
+	newNode->info[thread_number].currentBurst = index;
+	newNode->threadNum = thread_number;
+	newNode->info[thread_number].cpu_time[index] = cpu_time;
+	newNode->info[thread_number].io_time[index] = io_time;
+	newNode->info[thread_number].arrival_time = arrival_time;
 	newNode->process_number = process_number;
-	newNode->number_of_threads = number_of_threads;
+	newNode->type = type;
 	newNode->next = NULL;
 
 	return newNode;
 }
 
-void dequeue(){
 
-	Node * temp;
+/*get the head of the list priority*/
+int peek(){
+
+	int peekRt = 0;
 
 	if(head == NULL)
 	{
-		fprintf(stderr, "%s\n", "Deletion Error: removeHighest(), line 39.");
+		fprintf(stderr, "%s\n", "Peek Error: peek(), line 33.");
 		exit(1);
 	}
 
-	if(head == tail)
-	{
-		tail = NULL;
-	}
+	peekRt = head->priority;
 
-	temp = head;
-	head = head->next;
-	temp->next = NULL;
-	free(temp);
+	return peekRt;
+
 }

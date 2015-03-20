@@ -12,8 +12,8 @@ SRCDIR = src/
 
 #Put the names of your source code file in the lines below.  
 
-SRC_PQ = $(SRCDIR)PQueue.c $(SRCDIR)main.c $(SRCDIR)QStruct.c
-SRC_Q = $(SRCDIR)Queue.c $(SRCDIR)main.c $(SRCDIR)PQueue.c
+SRC_PQ = $(SRCDIR)PQueue.c $(SRCDIR)main.c $(SRCDIR)QStruct.c $(SRCDIR)Queue.c
+SRC_Q = $(SRCDIR)QStruct.c $(SRCDIR)main.c $(SRCDIR)Queue.c
 
 
 #The names of the binary programs that will be produced.  

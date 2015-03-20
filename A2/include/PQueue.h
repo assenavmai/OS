@@ -8,9 +8,9 @@
 #include "QStruct.h"
 
 
-Node * create();
-void insert(int priority, int number_of_processes, int thread_switch, int process_switch, int process_number, int number_of_threads, Thread * info);
-void display();
-void makeEmpty();
-
+void insert(Node *);
+void dequeue();
+Boolean isEmpty();
+int peek();
+void IOinsert(Node * readyEvent);
 #endif
