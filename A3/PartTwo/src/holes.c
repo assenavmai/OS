@@ -8,7 +8,7 @@
 
 char processID[1024];
 int processSize[1024];
-int memory[128] = {0};
+int memory[129] = {0};
 
 int readFile();
 void firstFit();
@@ -133,7 +133,7 @@ void first(){
 
 	int i = 0, j,k, x,blockSize = 0, prev = -1;
 	int numProcesses = 0, holes = 0;
-	Boolean noSpace = false;
+	Boolean inserting = false;
 	int memsize = 128;
 	int count;
 	
@@ -142,38 +142,30 @@ void first(){
 	
 	while(!isEmpty())
 	{
-		
-		for(i = 0; i < 128; i++)
+		inserting = false;
+
+		for(i = 1; i < 129; i++)
 		{
 			if(memory[i] == 0)
 			{
 				blockSize++;
+				memory[i] = 1;
+				/*printf("         block %d %d\n", i, blockSize);*/
 				/*printf("   i %d\n", i);*/
 				/*printf("At spot %d it is %d\n", i, memory[i]);*/
 				if(head != NULL)
 				{
 						/*printf("no null %d %d\n", head->size, blockSize);*/
 					if(blockSize >= head->size)
-					{
-						/*printf("%d %d %d\n", prev, blockSize, i);*/
-						
-						numProcesses++;
+					{	
 
-						if(!noSpace)
+						for(j = 1; j < 129; j++)
 						{
-							head->start = prev + 1;
+							if(memory[j] == 1)
+							{
+								memory[j] = head->id;
+							}
 						}
-						
-						head->end = blockSize + head->start;
-						x = 1;
-						for(j = head->start; j < head->end; j++)
-						{
-							/*printf("%d\n", x);*/
-							memory[j] = head->id;
-							x++;
-						}
-						printf("         block %d\n", blockSize);
-						/*printf("prev %d block %d\n", prev, blockSize);*/
 						memsize -= head->size;
 						/*printf("              %c start = %d end = %d\n", head->id, head->start, head->end);*/
 						printf("PID Loaded: %c Number of Processes: %d Number of Holes: %d\n", head->id, head->start, head->end);
@@ -181,14 +173,15 @@ void first(){
 						prev = i;
 						blockSize = 0;
 
-						printf("          %d\n", memsize);
+						/*printf("          %d\n", memsize);
 
 
-							for(k = 0; k < 128; k++)
+							for(k = 1; k < 129; k++)
 							{
 								printf("%d ", memory[k]);
 							}
 							printf("\n");
+							inserting = true;*/
 
 						break;
 					}
@@ -197,35 +190,46 @@ void first(){
 			}
 							else
 				{
-					blockSize = 0;
+					while(blockSize != 0)
+					{
+						memory[blockSize] = 0;
+						blockSize--;
+					}
 				}
+
 		}
 
-		printf("bs %d\n", blockSize);
+		/*printf("bs %d\n", blockSize);*/
 
 		if(head != NULL)
 		{
-			if(memsize < head->size && blockSize < head->size)
+			if(blockSize < head->size && inserting == false)
 			{
-				noSpace = true;
 				memsize += memory_head->size;
-				prev = memory_head->start;
-				printf("   No space for %c  %d\n", head->id, memsize);
 
-				/*printf("      start %d  end   %d\n", memory_head->start, memory_head->end);*/
-				for(j = memory_head->start; j < memory_head->end; j++)
+				/*printf("   No space for %c  %d %c %d\n", head->id, memsize, memory_head->id, memory_head->size);*/
+
+				for(j = 1; j < 129; j++)
 				{
-					memory[j] = 0;
-				}
+					if(memory[j] == memory_head->id)
+					{
+						memory[j] = 0;
+					}
 
+					if(memory[j] == 1)
+					{
+						memory[j] = 0;
+					}
+				}
+				blockSize = 0;
 			
 				removeFromMemory();
 
-					for(k = 0; k < 128; k++)
+					/*for(k = 1; k < 129; k++)
 					{
 						printf("%d ", memory[k]);
 					}
-					printf("\n\n");
+					printf("\n\n");*/
 
 			}
 		}
@@ -235,6 +239,7 @@ void first(){
 
 
 }
+
 
 void insertIntoMemory(){
 
