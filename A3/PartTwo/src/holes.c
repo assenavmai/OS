@@ -10,24 +10,25 @@ char processID[1024];
 int processSize[1024];
 int memory[129] = {0};
 
-int readFile();
+void readFile();
 void firstFit();
 void bestFit();
-
+void bestTest();
 void insertIntoMemory();
 void removeFromMemory();
-void first();
+
 
 int main(int argc, char const *argv[])
 {
 	
 
 	/*print();*/
-	first();
+	/*firstFit();*/
+	bestTest();
 	return 0;
 }
 
-int readFile(){
+void readFile(){
 
 	FILE * f;
 	char id;
@@ -58,86 +59,231 @@ int readFile(){
 		}
 	}
 
-	return lineAmount;
+}
+
+void bestTest()
+{
+	int i,j;
+	int bestStart = 1;
+	int blockSize = 0;
+	int currStart = 0;
+	int smallestSize = 128;
+
+
+	readFile();
+
+	while(!isEmpty())
+	{
+		for(i = 1; i < 129; i++)
+		{
+			if(memory[i] == 0)
+			{
+				if(blockSize == 0)
+				{
+					currStart = i;
+					printf("                                       curr %d\n", currStart);
+				}
+				blockSize++;
+			}
+			else
+			{
+				if(blockSize > 0)
+				{
+					if(blockSize < smallestSize && blockSize >= head->size)
+					{
+						printf("     in for else\n");
+						bestStart = currStart;
+						smallestSize = blockSize;
+					}
+				}
+			}
+		}
+
+		if(blockSize < smallestSize && blockSize >= head->size)
+		{
+			printf("         outside\n");
+			bestStart = currStart;
+			smallestSize = blockSize;
+		}
+
+		printf("Best Time = %d Smallest = %d\n", bestStart, smallestSize);
+		if(head != NULL)
+		{
+			if(blockSize < head->size)
+			{
+				printf("remove\n");
+
+				for(j = 1; j < 129; j++)
+				{
+					if(memory[j] == memory_head->id)
+					{
+						memory[j] = 0;
+
+					}
+				}
+				removeFromMemory();
+
+
+				for(j = 1; j < 129; j++)
+				{
+					printf("%d ", memory[j]);
+				}
+				printf("\n");
+
+			}
+			else
+			{
+				printf("insert\n");
+				for(j = bestStart; j < bestStart + head->size; j++)
+				{
+					memory[j] = head->id;
+				}
+				insertIntoMemory();
+
+
+				for(j = 1; j < 129; j++)
+				{
+					printf("%d ", memory[j]);
+				}
+				printf("\n");
+			}
+
+		}
+
+		blockSize = 0;
+	}
+
+	
+	
+
+	for(j = 1; j < 129; j++)
+	{
+		printf("%d ", memory[j]);
+	}
+	printf("\n");
+}
+void bestFit(){
+
+	int i = 0, j, blockSize = 0, loads = 0;
+	int bestStart = 1;
+	int currStart = 0;
+	int smallestSize = 128;
+	int numProcesses = 0, holes = 0;
+	Boolean smallestFound = false;
+	int memsize = 128;
+	
+	readFile();
+
+	while(!isEmpty())
+	{
+		smallestFound = false;
+		for(i = 1; i < 129; i++)
+		{
+			if(memory[i] == 0)
+			{
+					/*memory[i] =1;*/
+				if(blockSize == 0)
+				{
+					currStart = i;
+				}
+				blockSize++;
+			}
+			else 
+			{	
+				/*printf("     %d\n", blockSize);*/
+				if(blockSize > 0)
+				{
+					printf("jdjd %d < %d && %d >= %d \n", blockSize, smallestSize, blockSize, head->size);
+					if(blockSize < smallestSize && blockSize >= head->size)
+					{						
+						bestStart = currStart;
+						smallestSize = blockSize;
+						smallestFound = true;
+					}
+
+					blockSize = 0;
+				}
+				
+			}
+		}
+		printf("last %d < %d && %d >= %d \n", blockSize, smallestSize, blockSize, head->size);
+		if(blockSize < smallestSize && blockSize >= head->size)
+		{
+			printf("    last block check\n");
+			bestStart = currStart;
+			smallestSize = blockSize;
+			blockSize = 0;
+			smallestFound = true;
+		}
+
+		printf("Best Start = %d BlockSize = %d Smallest = %d Head -> %d\n", bestStart, blockSize, smallestSize, head->size);
+
+		print();
+
+		if(head != NULL)
+		{
+			if(blockSize < head->size && !smallestFound)
+			{
+				printf("removing\n");
+				for(j = 1; j < 129; j++)
+				{
+					if(memory[j] == memory_head->id)
+					{
+						memory[j] = 0;
+					}
+				}
+
+				for(j = 1; j < 129; j++)
+				{
+					printf("%d ", memory[j]);
+				}
+					printf("\n");
+
+				memsize += head->size;
+				removeFromMemory();
+				
+			}
+			else
+			{
+				printf("inseting %d %d\n",bestStart, head->size);
+
+				for(j = 1; j < head->size + 1 ; j++)
+				{
+					memory[j] = head->id;
+				}
+
+				memsize -= head->size;
+				insertIntoMemory();
+
+				for(j = 1; j < 129; j++)
+				{
+					printf("%d ", memory[j]);
+				}
+					printf("\n");
+			}
+		}
+
+
+	}
+		
+		
+
+		/*for(i = 1; i < 129; i++)
+		{
+			printf("%d ", memory[i]);
+		}
+		printf("\n");*/
+
 }
 
 void firstFit(){
 
-	int memsize = 128;
-	int loads = 0;
-	int numProcesses = 0;
-	int holes = 8;
-	int count;
-	
-	count = readFile();
-
-	while(!isEmpty())
-	{
-
-		if(memsize >= head->size)
-		{
-			memory_enqueue(head->id, head->size, head->swapped, head->start, head->end);
-			memsize -= head->size;
-			numProcesses++;
-			loads++;
-			holes--;
-
-			printf("PID Loaded: %c Number of Processes: %d Number of Holes: %d\n", head->id, numProcesses, holes);
-			dequeue();
-		}
-
-		if(head != NULL)
-		{
-			if(head->size > memsize)
-			{
-				memory_head->swapped++;
-				memsize += memory_head->size;
-				holes++;
-				if(memory_head->swapped != 3)
-				{
-					enqueue(memory_head->id, memory_head->size, memory_head->swapped, head->start, head->end);
-					memory_dequeue();
-				}
-				else
-				{
-					memory_dequeue();
-				}
-				numProcesses--;
-			/*	printf("%d\n", memsize);*/
-
-			}
-		}
-		
-	}
-	
-	printf("Total Loads = %d\n", loads);
-
-	destroy();
-	memory_destroy();
-}
-
-
-void bestFit(){
-
-	/*Process * smallest;
-	int count, i, space = 0, memsize = 128;
-	int memory[128] = {0};
-
-	count = readFile();
-
-	smallest = traverse();*/
-
-}
-
-void first(){
-
-	int i = 0, j,k, x,blockSize = 0, prev = -1;
+	int i = 0, j, blockSize = 0, loads = 0;
 	int numProcesses = 0, holes = 0;
 	Boolean inserting = false;
 	int memsize = 128;
-	int count;
 	
-	count = readFile();
+	readFile();
 
 	
 	while(!isEmpty())
@@ -150,12 +296,9 @@ void first(){
 			{
 				blockSize++;
 				memory[i] = 1;
-				/*printf("         block %d %d\n", i, blockSize);*/
-				/*printf("   i %d\n", i);*/
-				/*printf("At spot %d it is %d\n", i, memory[i]);*/
+
 				if(head != NULL)
 				{
-						/*printf("no null %d %d\n", head->size, blockSize);*/
 					if(blockSize >= head->size)
 					{	
 
@@ -166,48 +309,36 @@ void first(){
 								memory[j] = head->id;
 							}
 						}
+
+						numProcesses++;
+						loads++;
 						memsize -= head->size;
 						/*printf("              %c start = %d end = %d\n", head->id, head->start, head->end);*/
-						printf("PID Loaded: %c Number of Processes: %d Number of Holes: %d\n", head->id, head->start, head->end);
+						printf("PID Loaded: %c Number of Processes: %d Number of Holes: %d\n", head->id, numProcesses, holes);
 						insertIntoMemory();
-						prev = i;
+						inserting = true;
 						blockSize = 0;
-
-						/*printf("          %d\n", memsize);
-
-
-							for(k = 1; k < 129; k++)
-							{
-								printf("%d ", memory[k]);
-							}
-							printf("\n");
-							inserting = true;*/
 
 						break;
 					}
 				}
 				
 			}
-							else
+			else
+			{
+				while(blockSize != 0)
 				{
-					while(blockSize != 0)
-					{
-						memory[blockSize] = 0;
-						blockSize--;
-					}
+					memory[blockSize] = 0;
+					blockSize--;
 				}
-
+			}
 		}
-
-		/*printf("bs %d\n", blockSize);*/
 
 		if(head != NULL)
 		{
 			if(blockSize < head->size && inserting == false)
 			{
 				memsize += memory_head->size;
-
-				/*printf("   No space for %c  %d %c %d\n", head->id, memsize, memory_head->id, memory_head->size);*/
 
 				for(j = 1; j < 129; j++)
 				{
@@ -221,23 +352,20 @@ void first(){
 						memory[j] = 0;
 					}
 				}
+
+				numProcesses--;
 				blockSize = 0;
-			
+							
+						
 				removeFromMemory();
-
-					/*for(k = 1; k < 129; k++)
-					{
-						printf("%d ", memory[k]);
-					}
-					printf("\n\n");*/
-
 			}
 		}
-		
-		
 	}
 
+	printf("Total Loads = %d\n", loads);
 
+	memory_destroy();
+	destroy();
 }
 
 
