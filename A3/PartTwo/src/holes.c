@@ -13,7 +13,8 @@ int memory[129] = {0};
 void readFile();
 void firstFit();
 void bestFit();
-void bestTest();
+void worstFit();
+/*void bestTest();*/
 void insertIntoMemory();
 void removeFromMemory();
 
@@ -21,10 +22,7 @@ void removeFromMemory();
 int main(int argc, char const *argv[])
 {
 	
-
-	/*print();*/
-	/*firstFit();*/
-	bestTest();
+	worstFit();
 	return 0;
 }
 
@@ -61,19 +59,26 @@ void readFile(){
 
 }
 
-void bestTest()
+void bestFit()
 {
 	int i,j;
 	int bestStart = 1;
 	int blockSize = 0;
 	int currStart = 0;
 	int smallestSize = 128;
+	Boolean found = false;
 
 
 	readFile();
 
 	while(!isEmpty())
 	{
+		blockSize = 0;
+		bestStart = 1;
+		currStart =0;
+		smallestSize = 128;
+		found = false;
+
 		for(i = 1; i < 129; i++)
 		{
 			if(memory[i] == 0)
@@ -87,6 +92,7 @@ void bestTest()
 			}
 			else
 			{
+				
 				if(blockSize > 0)
 				{
 					if(blockSize < smallestSize && blockSize >= head->size)
@@ -94,7 +100,10 @@ void bestTest()
 						printf("     in for else\n");
 						bestStart = currStart;
 						smallestSize = blockSize;
+						found = true;
 					}
+					blockSize = 0;
+
 				}
 			}
 		}
@@ -104,14 +113,15 @@ void bestTest()
 			printf("         outside\n");
 			bestStart = currStart;
 			smallestSize = blockSize;
+			found = true;
 		}
 
-		printf("Best Time = %d Smallest = %d\n", bestStart, smallestSize);
+		printf("Best Start = %d Smallest = %d Blocksize = %d\n", bestStart, smallestSize, blockSize);
 		if(head != NULL)
 		{
-			if(blockSize < head->size)
+			if(blockSize < head->size && !found)
 			{
-				printf("remove\n");
+				printf("no space for %c remove %c\n", head->id, memory_head->id);
 
 				for(j = 1; j < 129; j++)
 				{
@@ -130,10 +140,12 @@ void bestTest()
 				}
 				printf("\n");
 
+				bestStart = 1;
+
 			}
 			else
 			{
-				printf("insert\n");
+				printf("insert %d\n", bestStart);
 				for(j = bestStart; j < bestStart + head->size; j++)
 				{
 					memory[j] = head->id;
@@ -146,11 +158,11 @@ void bestTest()
 					printf("%d ", memory[j]);
 				}
 				printf("\n");
+
 			}
 
 		}
 
-		blockSize = 0;
 	}
 
 	
@@ -162,7 +174,125 @@ void bestTest()
 	}
 	printf("\n");
 }
-void bestFit(){
+
+
+
+void worstFit()
+{
+	int i,j;
+	int bestStart = 1;
+	int blockSize = 0;
+	int currStart = 0;
+	int biggestSize = 0;
+	Boolean found = false;
+
+
+	readFile();
+
+	while(!isEmpty())
+	{
+		blockSize = 0;
+		bestStart = 1;
+		currStart =0;
+		biggestSize = 0;
+		found = false;
+
+		for(i = 1; i < 129; i++)
+		{
+			if(memory[i] == 0)
+			{
+				if(blockSize == 0)
+				{
+					currStart = i;
+					printf("                                       curr %d\n", currStart);
+				}
+				blockSize++;
+			}
+			else
+			{
+				
+				if(blockSize > 0)
+				{
+					if(blockSize > biggestSize && blockSize >= head->size)
+					{
+						printf("     in for else %d\n", currStart);
+						bestStart = currStart;
+						biggestSize = blockSize;
+						found = true;
+					}
+					blockSize = 0;
+
+				}
+			}
+		}
+
+		if(blockSize > biggestSize && blockSize >= head->size)
+		{
+			printf("         outside\n");
+			bestStart = currStart;
+			biggestSize = blockSize;
+			found = true;
+		}
+
+		printf("Best Start = %d Smallest = %d Blocksize = %d\n", bestStart, biggestSize, blockSize);
+		if(head != NULL)
+		{
+			if(blockSize < head->size && !found)
+			{
+				printf("no space for %c remove %c\n", head->id, memory_head->id);
+
+				for(j = 1; j < 129; j++)
+				{
+					if(memory[j] == memory_head->id)
+					{
+						memory[j] = 0;
+
+					}
+				}
+				removeFromMemory();
+
+
+				for(j = 1; j < 129; j++)
+				{
+					printf("%d ", memory[j]);
+				}
+				printf("\n");
+
+				bestStart = 1;
+
+			}
+			else
+			{
+				printf("insert %d\n", bestStart);
+				for(j = bestStart; j < bestStart + head->size; j++)
+				{
+					memory[j] = head->id;
+				}
+				insertIntoMemory();
+
+
+				for(j = 1; j < 129; j++)
+				{
+					printf("%d ", memory[j]);
+				}
+				printf("\n");
+
+			}
+
+		}
+
+	}
+
+	
+	
+
+	for(j = 1; j < 129; j++)
+	{
+		printf("%d ", memory[j]);
+	}
+	printf("\n");
+}
+/*void bestFit(){
 
 	int i = 0, j, blockSize = 0, loads = 0;
 	int bestStart = 1;
@@ -181,7 +311,6 @@ void bestFit(){
 		{
 			if(memory[i] == 0)
 			{
-					/*memory[i] =1;*/
 				if(blockSize == 0)
 				{
 					currStart = i;
@@ -190,7 +319,6 @@ void bestFit(){
 			}
 			else 
 			{	
-				/*printf("     %d\n", blockSize);*/
 				if(blockSize > 0)
 				{
 					printf("jdjd %d < %d && %d >= %d \n", blockSize, smallestSize, blockSize, head->size);
@@ -266,15 +394,8 @@ void bestFit(){
 
 	}
 		
-		
-
-		/*for(i = 1; i < 129; i++)
-		{
-			printf("%d ", memory[i]);
-		}
-		printf("\n");*/
-
-}
+	
+}*/
 
 void firstFit(){
 
