@@ -11,38 +11,37 @@ typedef struct Process_t
 	char id;
 	int size;
 	int swapped;
-	int start;
-	int end;
 	struct Process_t * next;
 }Process;
 
+/*Process Queue*/
 Process * head;
 Process * tail;
 
+/*Memory Queue*/
 Process * memory_head;
 Process * memory_tail;
 
+/*Length of Process Queue*/
 int length;
+
+/*Length of Memory Queue*/
 int memory_length;
 
-Process * Q_create();
-Process * initNode(int id, int size, int swapped, int start, int end);
-void enqueue(int id, int size, int swapped, int start, int end);
+/*process memory functions*/
+Process * initNode(int id, int size, int swapped);
+void enqueue(int id, int size, int swapped);
 void dequeue();
 Boolean isEmpty();
 void print();
+void destroy();
 
-void memory_enqueue(int id, int size, int swapped, int start, int end);
+
+/*memory queue functions*/
+void memory_enqueue(int id, int size, int swapped);
 void memory_dequeue();
 void memory_print();
 Boolean memory_isEmpty();
-
-void destroy();
 void memory_destroy();
-
-Process * traverse();
-/*void Q_dequeue();
-void Q_insert(Node *);
-Boolean Q_isEmpty();*/
 
 #endif

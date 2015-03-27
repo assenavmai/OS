@@ -1,15 +1,7 @@
 #include "Queue.h"
 
-Process * Q_create(){
-
-	Process * q;
-
-	q = NULL;
-
-	return q;
-}
-
-Process * initNode(int id, int size, int swapped, int start, int end){
+/*Create a new node to put into the queue*/
+Process * initNode(int id, int size, int swapped){
 
 	Process * newProcess = malloc(sizeof(Process) * 1);
 
@@ -22,20 +14,19 @@ Process * initNode(int id, int size, int swapped, int start, int end){
 	newProcess->id = id;
 	newProcess->size = size;
 	newProcess->swapped = swapped;
-	newProcess->start = start;
-	newProcess->end = end;
 	newProcess->next = NULL;
 
 	return newProcess;
 }
 
-void enqueue(int id, int size, int swapped, int start, int end){
+/*Add to the back of the process queue*/
+void enqueue(int id, int size, int swapped){
 
 	Process * data;
 
-	data = initNode(id, size, swapped, start, end);
+	data = initNode(id, size, swapped);
 
-	if(head == NULL)
+	if(head == NULL)/*if there is not anything in the queue*/
 	{
 		head = tail = data;
 	}
@@ -48,25 +39,7 @@ void enqueue(int id, int size, int swapped, int start, int end){
 	length++;
 }
 
-void memory_enqueue(int id, int size, int swapped, int start, int end){
-
-	Process * data;
-
-	data = initNode(id, size, swapped, start, end);
-
-	if(memory_head == NULL)
-	{
-		memory_head = memory_tail = data;
-	}
-	else
-	{
-		memory_tail->next = data;
-		memory_tail = data;
-	}
-
-	memory_length++;
-}
-
+/*Remove from the front of the process queue*/
 void dequeue(){
 
 	Process * temp;
@@ -84,6 +57,71 @@ void dequeue(){
 	/*free(temp);*/
 }
 
+/*Checks if the queue is empty*/
+Boolean isEmpty(){
+
+	if(length == 0 || head == NULL)
+	{
+		return true;
+	}
+
+	return false;
+}
+
+/*Destroys the process queue*/
+void destroy(){
+
+	if(head == NULL)
+	{
+		return;
+	}
+
+	while(head != NULL)
+	{
+		dequeue();
+	}
+
+	tail = NULL;
+}
+
+/*Helper function: prints out the process queue*/
+void print(){
+
+	Process * temp;
+
+	temp = head;
+
+	while(temp != NULL)
+	{
+		printf("%c %d %d\n", temp->id, temp->size, temp->swapped);
+		temp = temp->next;
+	}
+}
+
+/*************************************Memory Queue Functions Start Here************************************************/
+
+/*Adds to the back of the memory queue*/
+void memory_enqueue(int id, int size, int swapped){
+
+	Process * data;
+
+	data = initNode(id, size, swapped);
+
+	if(memory_head == NULL)
+	{
+		memory_head = memory_tail = data;
+	}
+	else
+	{
+		memory_tail->next = data;
+		memory_tail = data;
+	}
+
+	memory_length++;
+}
+
+
+/*Removes the first element in the memory queue*/
 void memory_dequeue(){
 
 	Process * temp;
@@ -101,21 +139,8 @@ void memory_dequeue(){
 	free(temp);
 }
 
-void destroy(){
 
-	if(head == NULL)
-	{
-		return;
-	}
-
-	while(head != NULL)
-	{
-		dequeue();
-	}
-
-	tail = NULL;
-}
-
+/*Destroys the memory queue*/
 void memory_destroy(){
 
 	if(memory_head == NULL)
@@ -132,16 +157,8 @@ void memory_destroy(){
 
 }
 
-Boolean isEmpty(){
 
-	if(length == 0 || head == NULL)
-	{
-		return true;
-	}
-
-	return false;
-}
-
+/*Checks if the memory queue is empty*/
 Boolean memory_isEmpty(){
 
 	if(memory_length == 0)
@@ -152,40 +169,7 @@ Boolean memory_isEmpty(){
 	return false;
 }
 
-Process * traverse(){
-
-	Process * curr, *smallest;
-
-	curr = head;
-
-	while(curr->next != NULL)
-	{
-
-		if(curr->size <= curr->next->size)
-		{
-			smallest = curr;
-			
-		}
-
-		curr = curr->next;
-	}
-	printf("%c %d\n", smallest->id, smallest->size);
-	return smallest;
-}
-
-void print(){
-
-	Process * temp;
-
-	temp = head;
-
-	while(temp != NULL)
-	{
-		printf("%c %d %d\n", temp->id, temp->size, temp->swapped);
-		temp = temp->next;
-	}
-}
-
+/*Prints out the memory queue -> helper function*/
 void memory_print(){
 
 	Process * temp;

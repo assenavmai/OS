@@ -12,7 +12,7 @@ SRCDIR = src/
 
 #Put the names of your source code file in the lines below.  
 
-SRC_PHIL = $(SRCDIR)Queue.c $(SRCDIR)holes.c
+SRC_PHIL = $(SRCDIR)Queue.c $(SRCDIR)holesFunctions.c $(SRCDIR)holes.c
 
 #The names of the binary programs that will be produced.  
 #
