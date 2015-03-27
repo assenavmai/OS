@@ -191,6 +191,11 @@ void memory_print(){
 	Process * temp;
 
 	temp = memory_head;
+	if(isEmpty())
+	{
+		printf("Nothing to print in memory!\n");
+		return;
+	}
 
 	while(temp != NULL)
 	{
